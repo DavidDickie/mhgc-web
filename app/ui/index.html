@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mega Hyper Galactic Conquest</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/final.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='5' fill='%234ea1ff'/%3E%3Ccircle cx='8' cy='8' r='7' fill='none' stroke='%23f0b429' stroke-width='1'/%3E%3C/svg%3E">
+  <script type="module" src="/static/app.js"></script>
+</head>
+<body>
+<a class="skip" id="skipLink" href="#lobbyMain">Skip to content</a>
+
+<!-- ============================================================ lobby -->
+<div id="lobby" class="lobby" hidden>
+  <header class="lobby-head">
+    <h1><span class="logo" aria-hidden="true"></span> Mega Hyper Galactic Conquest</h1>
+    <p class="tag">The 1994 play-by-email space conquest game, now in your browser.</p>
+  </header>
+  <main id="lobbyMain" class="lobby-main">
+    <section class="card" aria-labelledby="gamesH">
+      <div class="row-between">
+        <h2 id="gamesH">Games</h2>
+        <div class="row gap">
+          <button type="button" id="refreshLobby" class="ghost">Refresh</button>
+          <button type="button" id="newGameBtn" class="primary">New game</button>
+        </div>
+      </div>
+      <ul id="gameList" class="game-list" aria-live="polite"></ul>
+    </section>
+    <aside class="card lobby-side">
+      <h2>How it works</h2>
+      <ul class="plain">
+        <li>A game has 4, 8, 9, 12 or 16 empires. Seats not taken by humans are computer empires.</li>
+        <li>Pick a game, then log in to your race with its <strong>password</strong>, or take an open seat and choose one. You can play from any browser.</li>
+        <li>One person may play several races; switch between them in the top bar.</li>
+        <li>The turn runs when every human has submitted. The host can also force it.</li>
+        <li>No deadlines: a game waits as long as it takes.</li>
+      </ul>
+      <p><button type="button" class="link" id="lobbyHelp">Read the rules</button></p>
+    </aside>
+  </main>
+</div>
+
+<!-- ============================================================ game -->
+<div id="game" class="game" hidden>
+  <header class="topbar">
+    <button type="button" id="toLobby" class="icon-btn" title="Back to the game list" aria-label="Back to the game list">&#8962;</button>
+    <div class="brand">
+      <div id="gameName" class="game-name"></div>
+      <div id="empireName" class="empire-name"></div>
+    </div>
+    <div class="turnbox">
+      <label for="turnPick" class="sr-only">Turn to show</label>
+      <button type="button" id="turnPrev" class="icon-btn" aria-label="Previous turn">&#9664;</button>
+      <select id="turnPick"></select>
+      <button type="button" id="turnNext" class="icon-btn" aria-label="Next turn">&#9654;</button>
+    </div>
+    <dl id="chips" class="chips"></dl>
+    <div class="spacer"></div>
+    <div id="waitBox" class="waitbox" aria-live="polite"></div>
+    <button type="button" id="checkBtn" class="ghost">Check orders</button>
+    <button type="button" id="submitBtn" class="primary">Submit turn</button>
+    <button type="button" id="forceBtn" class="danger" hidden>Force turn</button>
+    <button type="button" id="run5Btn" class="ghost" hidden title="Run five turns, one after another, stopping at the end of the game">Run 5 turns</button>
+    <label for="raceSwitch" class="sr-only">Race to play</label>
+    <select id="raceSwitch" class="race-switch" hidden title="Switch to another race you are logged in to"></select>
+    <label for="viewAsPick" class="sr-only">View as race</label>
+    <select id="viewAsPick" class="race-switch" hidden title="Host: view the game as any race (read-only)"></select>
+    <details id="raceMenu" class="menu">
+      <summary class="icon-btn" aria-label="Race and host menu" title="Your race: password, log out; host controls">&#9776;</summary>
+      <div id="raceMenuItems" class="menu-items" role="menu"></div>
+    </details>
+    <button type="button" id="helpBtn" class="icon-btn" title="Rules and help (?)" aria-label="Rules and help">?</button>
+  </header>
+  <div id="viewAsBanner" class="history-banner viewas-banner" hidden role="status"></div>
+  <div id="historyBanner" class="history-banner" hidden role="status"></div>
+  <main id="gameMain" class="layout">
+    <section class="map-pane" aria-label="Galaxy map">
+      <canvas id="map" tabindex="0" aria-label="Galaxy map. Arrow keys move the cursor, Enter selects, plus and minus zoom, H centres on home, M moves the selected fleet or ship to the cursor."></canvas>
+      <div id="mapTip" class="map-tip" hidden></div>
+      <div class="map-tools">
+        <form id="searchForm" class="search" role="search">
+          <label for="searchBox" class="sr-only">Go to system</label>
+          <input id="searchBox" list="searchList" placeholder="Go to system…" autocomplete="off">
+          <datalist id="searchList"></datalist>
+        </form>
+        <div class="zoom">
+          <button type="button" id="zoomIn" class="icon-btn" aria-label="Zoom in">+</button>
+          <button type="button" id="zoomOut" class="icon-btn" aria-label="Zoom out">&minus;</button>
+          <button type="button" id="zoomHome" class="icon-btn" aria-label="Centre on home" title="Centre on home (H)">&#8962;</button>
+        </div>
+        <details class="layers">
+          <summary>Layers</summary>
+          <div id="layerList" class="layer-list"></div>
+          <div id="legend" class="legend"></div>
+        </details>
+      </div>
+      <div id="pickBanner" class="pick-banner" hidden role="status"></div>
+      <div id="cursorInfo" class="cursor-info" aria-live="polite"></div>
+      <canvas id="minimap" width="132" height="132" aria-label="Overview map; click to centre" role="img"></canvas>
+      <aside id="inspector" class="inspector" aria-label="Selection" hidden></aside>
+    </section>
+    <aside class="dock" aria-label="Panels">
+      <div class="tabs" role="tablist" id="tabs"></div>
+      <div id="panels" class="panels"></div>
+    </aside>
+  </main>
+</div>
+
+<!-- ============================================================ dialogs -->
+<dialog id="newGameDlg" aria-labelledby="newGameH">
+  <form id="newGameForm" method="dialog" class="form">
+    <h2 id="newGameH">New game</h2>
+    <label>Game name <input name="name" maxlength="60" placeholder="optional"></label>
+    <label>Your name <input name="player" required maxlength="30" autocomplete="nickname"></label>
+    <fieldset class="host-mode">
+      <legend>You</legend>
+      <label class="inline"><input type="radio" name="mode" value="play" checked> I'll play a race (and host)</label>
+      <label class="inline"><input type="radio" name="mode" value="host"> Host only, no race</label>
+    </fieldset>
+    <div id="newGamePlay">
+      <label>Race name <input name="race" maxlength="20" pattern="[A-Za-z][A-Za-z0-9_]*" placeholder="one word, e.g. Terrans"></label>
+      <label>Race password <input name="password" type="password" minlength="4" maxlength="200" autocomplete="new-password" placeholder="at least 4 characters"></label>
+      <label>Password again <input name="password2" type="password" maxlength="200" autocomplete="new-password"></label>
+    </div>
+    <fieldset class="host-pw">
+      <legend>Host password (required)</legend>
+      <label class="inline" id="hostSameLabel"><input type="checkbox" name="host_same" checked> Use my race password as the host password</label>
+      <div id="hostPwFields">
+        <label>Host password <input name="host_password" type="password" minlength="4" maxlength="200" autocomplete="new-password" placeholder="at least 4 characters"></label>
+        <label>Host password again <input name="host_password2" type="password" maxlength="200" autocomplete="new-password"></label>
+        <label class="inline"><input type="checkbox" name="host_remember" checked> Remember it in this browser for my next game</label>
+      </div>
+      <p class="hint" id="hostPwHint">The host password logs you in as the host from any browser: force turns, reset passwords, hand races to the computer, view as any race. You can use the same host password for all the games you host, so it is easy to remember.</p>
+    </fieldset>
+    <fieldset class="size-pick" id="sizePick">
+      <legend>Game size</legend>
+      <div class="size-opts" id="sizeOpts"></div>
+    </fieldset>
+    <label>Human seats <input name="humans" type="number" min="1" max="8" value="2" required></label>
+    <p class="hint" id="newGameHint">The other 6 empires are computer empires.</p>
+    <label>Computer chatter
+      <select name="chatter">
+        <option value="normal" selected>Normal: computer empires boast in the chat</option>
+        <option value="quiet">Quiet: only the big moments</option>
+        <option value="off">Off</option>
+      </select>
+    </label>
+    <p class="err" id="newGameErr" role="alert"></p>
+    <div class="row-end gap">
+      <button type="button" value="cancel" class="ghost" data-close>Cancel</button>
+      <button type="submit" value="ok" class="primary">Create</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="gameDlg" class="game-dlg" aria-labelledby="gameDlgH">
+  <div class="form">
+    <div class="row-between"><h2 id="gameDlgH">Game</h2><button type="button" class="ghost small" data-close>Close</button></div>
+    <p class="hint" id="gameDlgInfo"></p>
+    <form id="loginForm" class="form sub-form" aria-labelledby="loginH">
+      <h3 id="loginH">Play an existing race</h3>
+      <label>Race <select name="seat" id="loginRace"></select></label>
+      <label>Password <input name="password" type="password" maxlength="200" autocomplete="current-password" required></label>
+      <p class="err" id="loginErr" role="alert"></p>
+      <div class="row-end"><button type="submit" class="primary">Log in</button></div>
+    </form>
+    <form id="joinForm" class="form sub-form" aria-labelledby="joinH">
+      <h3 id="joinH">Take an open seat</h3>
+      <fieldset><legend>Seat</legend><div id="joinSeats" class="seat-pick"></div></fieldset>
+      <label>Your name <input name="player" required maxlength="30" autocomplete="nickname"></label>
+      <label id="joinRaceLabel">Race name <input name="race" maxlength="20" pattern="[A-Za-z][A-Za-z0-9_]*" placeholder="one word"></label>
+      <label>Choose a password <input name="password" type="password" minlength="4" maxlength="200" autocomplete="new-password" required placeholder="at least 4 characters"></label>
+      <label>Password again <input name="password2" type="password" maxlength="200" autocomplete="new-password" required></label>
+      <p class="hint" id="joinHint"></p>
+      <p class="err" id="joinErr" role="alert"></p>
+      <div class="row-end"><button type="submit" class="primary">Take the seat</button></div>
+    </form>
+    <details id="hostLoginBox" class="sub-form">
+      <summary>I'm the host</summary>
+      <form id="hostLoginForm" class="form">
+        <label>Host password <input name="password" type="password" maxlength="200" autocomplete="current-password" required></label>
+        <p class="err" id="hostLoginErr" role="alert"></p>
+        <div class="row-end"><button type="submit" class="primary">Log in as host</button></div>
+      </form>
+    </details>
+  </div>
+</dialog>
+
+<dialog id="pwDlg" aria-labelledby="pwH">
+  <form id="pwForm" method="dialog" class="form">
+    <h2 id="pwH">Change password</h2>
+    <p class="hint" id="pwHint"></p>
+    <label id="pwCurLabel">Current password <input name="current" type="password" maxlength="200" autocomplete="current-password"></label>
+    <label>New password <input name="new" type="password" minlength="4" maxlength="200" autocomplete="new-password" required placeholder="at least 4 characters"></label>
+    <label>New password again <input name="new2" type="password" maxlength="200" autocomplete="new-password" required></label>
+    <p class="err" id="pwErr" role="alert"></p>
+    <div class="row-end gap">
+      <button type="button" class="ghost" id="pwCancel">Cancel</button>
+      <button type="submit" value="ok" class="primary">Save password</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="hostDlg" class="host-dlg" aria-labelledby="hostH">
+  <div class="form">
+    <div class="row-between"><h2 id="hostH">Host controls</h2><button type="button" class="ghost small" data-close>Close</button></div>
+    <p class="hint">Everyone sees a notice in the chat when you reset a password or change who plays a race. Every host action is kept in the host audit log, which the export includes.</p>
+    <div id="hostRaces" class="host-races"></div>
+    <form id="resetForm" class="form sub-form" hidden>
+      <h3 id="resetH">Reset password</h3>
+      <p class="hint">Give the race a temporary password and tell its player. Every browser logged in to it is logged out, and the player must choose a new password at the next login.</p>
+      <label>Temporary password <input name="password" type="text" minlength="4" maxlength="200" autocomplete="off" required></label>
+      <p class="err" id="resetErr" role="alert"></p>
+      <div class="row-end gap"><button type="button" class="ghost" id="resetCancel">Cancel</button><button type="submit" class="primary">Reset password</button></div>
+    </form>
+  </div>
+</dialog>
+
+<dialog id="orderDlg" class="order-dlg" aria-labelledby="orderH">
+  <form id="orderForm" method="dialog" class="form">
+    <div><h2 id="orderH">Order</h2><code id="orderCode" class="code-pill usage"></code></div>
+    <p id="orderHelp" class="hint"></p>
+    <div id="orderFields" class="fields"></div>
+    <pre id="orderPreview" class="order-preview" aria-label="Classic order text"></pre>
+    <details id="orderMore" class="more-help"><summary>More from the rulebook</summary><div id="orderMoreBody" class="md"></div></details>
+    <p class="err" id="orderErr" role="alert"></p>
+    <div class="row-end gap">
+      <button type="button" class="ghost" data-close>Cancel</button>
+      <button type="submit" value="ok" class="primary" id="orderOk">Add order</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="helpDlg" class="help-dlg" aria-labelledby="helpH">
+  <div class="help-head row-between">
+    <h2 id="helpH">Rules and help</h2>
+    <div class="row gap">
+      <label for="helpSearch" class="sr-only">Search the rules</label>
+      <input id="helpSearch" type="search" placeholder="Search the rules…">
+      <button type="button" class="ghost" data-close>Close</button>
+    </div>
+  </div>
+  <div class="help-body">
+    <nav id="helpToc" class="help-toc" aria-label="Rulebook contents"></nav>
+    <article id="helpText" class="md help-text" tabindex="-1"></article>
+  </div>
+</dialog>
+
+<dialog id="confirmDlg" aria-labelledby="confirmTitle">
+  <div class="form">
+    <h2 id="confirmTitle"></h2>
+    <p id="confirmBody"></p>
+    <div class="row-end gap">
+      <button type="button" id="confirmCancel" class="ghost">Cancel</button>
+      <button type="button" id="confirmOk" class="primary">OK</button>
+    </div>
+  </div>
+</dialog>
+
+<div id="toasts" class="toasts" aria-live="polite"></div>
+</body>
+</html>
