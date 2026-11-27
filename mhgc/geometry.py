@@ -1,7 +1,8 @@
 """Wrap-around board geometry (rules:223-231): a square torus, square (Chebyshev) moves and scans.
 
 The board side is a game parameter (`GameState.board`): 100 for the classic 16-empire map, 75 for
-the 3x3-bin maps, 50 for the 2x2 (Dave 2026-11-13 and 11-16, DECISIONS W-13, W-26).  Every function takes `board`, defaulting to
+the 3x3-bin maps, 50 for the 2x2, 125 for the 5x5 (Dave 2026-11-13, 11-16 and 11-24, DECISIONS W-13,
+W-26, G-30).  Every function takes `board`, defaulting to
 the classic 100, so callers with a game state pass `st.board`.
 """
 from __future__ import annotations

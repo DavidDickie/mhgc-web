@@ -1,6 +1,7 @@
 """Game sizes (Dave 2026-11-13, DECISIONS W-13): 8 empires on 75x75 with the centre bin empty,
 9 on 75x75, 12 on 100x100 with the four centre bins empty, and the classic 16 on 100x100; and
-(Dave 2026-11-16, W-26) 4 empires on 50x50, four quadrants.
+(Dave 2026-11-16, W-26) 4 empires on 50x50, four quadrants; and (Dave 2026-11-24, G-30) 20 and 25
+empires on 125x125 (5x5 bins; 20 has five empty bins a knight's move apart).
 
 Covers the map generator at every size, the variable board through geometry, scans, movement,
 the scan-history mask, the view (home at the board centre) and orders; whole bot games at every
@@ -26,7 +27,8 @@ from mhgc.view import view
 from tests.test_npr_sim import _check_rejections
 
 EXPECT = {4: (50, 2, [], 44), 8: (75, 3, [[1, 1]], 99), 9: (75, 3, [], 99),
-          12: (100, 4, [[1, 1], [1, 2], [2, 1], [2, 2]], 176), 16: (100, 4, [], 176)}
+          12: (100, 4, [[1, 1], [1, 2], [2, 1], [2, 2]], 176), 16: (100, 4, [], 176),
+          20: (125, 5, [[0, 0], [2, 1], [4, 2], [1, 3], [3, 4]], 275), 25: (125, 5, [], 275)}
 
 
 def _bin(x, y):
@@ -78,7 +80,7 @@ def test_each_size_generates(size, seed):
     assert len({_bin(*h) for h in hum}) == 3
     # humans are spread: on 4x4 they are never in neighbouring bins, on 3x3 (where every bin
     # touches every other on the torus) they are still at least a bin apart
-    far = 40 if side == 4 else 15                         # 2x2: every bin touches every other
+    far = 40 if side >= 4 else 15                         # 2x2: every bin touches every other
     assert min(G.distance(*a, *b, board) for i, a in enumerate(hum) for b in hum[i + 1:]) >= far
     # deterministic, and a save round-trips with the board
     assert M.dumps(new_game("t", seed, humans, size=size)) == M.dumps(st)
@@ -290,7 +292,7 @@ def test_view_and_orders_at_75():
                                   if o["code"] == "MO")["args"] if a["kind"] == "coord"] == [99, 99]
 
 
-GAMES = {4: (10, 1), 8: (11, 1), 9: (12, 0), 12: (13, 2), 16: (14, 1)}
+GAMES = {4: (10, 1), 8: (11, 1), 9: (12, 0), 12: (13, 2), 16: (14, 1), 20: (15, 2), 25: (16, 1)}
 _games: dict = {}
 
 
@@ -334,10 +336,10 @@ def test_api_sizes(tmp_path):
         (8, 75, 6, [[1, 1]], "normal")
     v = c.get(f"/api/games/{r.json()['id']}/view", headers=H(r.json()["token"])).json()
     assert v["game"]["board"] == 75 and v["empire"]["home"] == {"x": 37, "y": 37}
-    for size in (4, 9, 12, 16):
+    for size in (4, 9, 12, 16, 20, 25):
         g = c.post("/api/games", json={"password": "secret1", "humans": 1, "player": "D", "size": size, "host_password": "secret1"}).json()["game"]
         assert g["size"] == size and g["computers"] == size - 1
-        assert g["board"] == {4: 50, 9: 75}.get(size, 100)
+        assert g["board"] == {4: 50, 9: 75, 20: 125, 25: 125}.get(size, 100)
     g = c.post("/api/games", json={"password": "secret1", "humans": 3, "computers": 9, "player": "D", "host_password": "secret1"}).json()["game"]
     assert g["size"] == 12
     bad = [{"humans": 2, "player": "D", "size": 10}, {"humans": 9, "player": "D", "size": 8},
@@ -351,10 +353,12 @@ def test_api_sizes(tmp_path):
         .status_code == 422
     assert c.get("/api/orders/catalogue?board=75").json()["board"] == 75
     assert c.get("/api/orders/catalogue?board=50").json()["board"] == 50
+    assert c.get("/api/orders/catalogue?board=125").json()["board"] == 125
     assert c.get("/api/orders/catalogue?board=60").status_code == 422
     sizes = c.get("/api/reference").json()["game_sizes"]
     assert [(z["size"], z["board"], z["home"]) for z in sizes] == \
-        [(4, 50, [25, 25]), (8, 75, [37, 37]), (9, 75, [37, 37]), (12, 100, [50, 50]), (16, 100, [50, 50])]
+        [(4, 50, [25, 25]), (8, 75, [37, 37]), (9, 75, [37, 37]), (12, 100, [50, 50]), (16, 100, [50, 50]),
+         (20, 125, [62, 62]), (25, 125, [62, 62])]
 
 
 def test_api_old_game_without_size_loads(tmp_path):

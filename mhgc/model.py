@@ -243,6 +243,10 @@ class GameState:
     # another human player (Dave 2026-11-19, DECISIONS W-28).  The app works it out from the
     # seats and copies it here before every turn (as `chatter`); the engine never decides it.
     unranked: list[int] = field(default_factory=list)
+    # The win target in VP, fixed when the game is created (Dave 2026-11-22, DECISIONS G-28): new
+    # games get constants.VICTORY_POINTS (100).  Saves from before the field (G-26 moved every
+    # game to 90) load as constants.LEGACY_VICTORY_POINTS, 90 (see from_dict).
+    vp_to_win: int = K.VICTORY_POINTS
 
     # ---- lookups ------------------------------------------------------------------------
     def system_named(self, name: str) -> Optional[System]:
@@ -394,6 +398,8 @@ def to_dict(state: GameState) -> dict:
 def from_dict(d: dict) -> GameState:
     d = dict(d)
     d.pop("save_version", None)
+    if "vp_to_win" not in d:                # saved before G-28: these games played to 90 (G-26)
+        d["vp_to_win"] = K.LEGACY_VICTORY_POINTS
     return _decode(GameState, d)
 
 

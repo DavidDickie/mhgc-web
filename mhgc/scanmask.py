@@ -1,9 +1,9 @@
 """Scan history: the set of board squares an empire has ever had inside one of its scans.
 
 Stored per empire as `Empire.scan_history`, a board x board bitmask (100x100 on the classic map,
-75x75 on the 3x3-bin maps, 50x50 on the 2x2): bit (y * board + x) of a little-endian integer, so square (x, y) is
+75x75 on the 3x3-bin maps, 50x50 on the 2x2, 125x125 on the 5x5): bit (y * board + x) of a little-endian integer, so square (x, y) is
 byte (y*board+x) // 8, bit (y*board+x) % 8 (LSB first).  The bytes are kept as base64 (1668
-characters at 100, 940 at 75, 420 at 50) so the save stays plain JSON; "" means nothing scanned yet (saves
+characters at 100, 940 at 75, 420 at 50, 2608 at 125) so the save stays plain JSON; "" means nothing scanned yet (saves
 from before 2026-11-13 load that way).  The view sends the same encoding re-based to the empire's
 relative coordinates (`to_relative`).
 

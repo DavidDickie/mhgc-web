@@ -165,6 +165,17 @@ export function fmt(n, digits = 0) {
   if (typeof n !== "number") return String(n);
   return n.toLocaleString(undefined, { maximumFractionDigits: digits, minimumFractionDigits: 0 });
 }
+// Alphabetical order for every dropdown of systems, fleets and races (Dave 2026-11-22, DECISIONS
+// W-32): case-insensitive and natural, so "Fleet2" comes before "Fleet10" and "alpha" sits with
+// "Alpha"; unnamed entries (unscanned systems) go last.  Ties fall back to the exact string so the
+// order is stable.  `byName(list, key)` returns a sorted copy; `key` gives an item's name.
+const NAME_COLLATOR = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
+export function compareNames(a, b) {
+  const x = a === null || a === undefined ? "" : String(a), y = b === null || b === undefined ? "" : String(b);
+  if (!x || !y) return (!x) - (!y);
+  return NAME_COLLATOR.compare(x, y) || (x < y ? -1 : x > y ? 1 : 0);
+}
+export const byName = (list, key = x => x.name) => [...list].sort((a, b) => compareNames(key(a), key(b)));
 export const pct = v => `${Math.round(v)}%`;
 export const xy = (x, y) => `${x},${y}`;
 
@@ -284,7 +295,7 @@ export function systemOwnerLabel(s) {
 }
 
 // ---------------------------------------------------------------- geometry (torus, relative)
-// The board side and the home square come from the game (view.game.board: 100, 75 or 50; home at
+// The board side and the home square come from the game (view.game.board: 100, 75, 50 or 125; home at
 // the centre, 50,50, 37,37 or 25,25).  ES module bindings are live, so importers see setBoard's values.
 export let BOARD = 100;
 export let HOME = 50;

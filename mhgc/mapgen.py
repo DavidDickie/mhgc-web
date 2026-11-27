@@ -1,6 +1,6 @@
 """New-game generation: the wrap-around board of home bins.
 
-Game sizes (Dave 2026-11-13 and 2026-11-16, DECISIONS W-13 and W-26; `constants.GAME_SIZES`):
+Game sizes (Dave 2026-11-13, 11-16 and 11-24, DECISIONS W-13, W-26 and G-30; `constants.GAME_SIZES`):
 
     empires  bins  board    empty bins (no home empire, but their normal share of systems)
        4     2x2   50x50    none (four quadrants)
@@ -8,8 +8,11 @@ Game sizes (Dave 2026-11-13 and 2026-11-16, DECISIONS W-13 and W-26; `constants.
        9     3x3   75x75    none
       12     4x4   100x100  the 4 centre bins
       16     4x4   100x100  none (the classic map, generated exactly as before)
+      20     5x5   125x125  5, a knight's move apart: (bx, by) = (2r mod 5, r) for row r (G-30)
+      25     5x5   125x125  none
 
-Every bin is 25x25 and holds 11 systems: 44 systems at 2x2, 99 at 3x3 and 176 at 4x4.  An empty bin
+Every bin is 25x25 and holds 11 systems: 44 systems at 2x2, 99 at 3x3, 176 at 4x4
+and 275 at 5x5.  An empty bin
 has an unowned, very habitable metal- and agriculture-rich world at its heart where a home would
 be, and the same ten kinds of system around it: open territory to fight over.
 
@@ -31,6 +34,7 @@ from typing import Optional, Sequence
 
 from . import geometry as G
 from .data import constants as K
+from .data.ships import default_role
 from .model import (Empire, GameState, HUMAN, INDEPENDENT, Leader, NPR, Ship, System)
 from .rng import Rng
 
@@ -115,7 +119,7 @@ def _spread_bins(rng: Rng, n_humans: int, bins: list[int], side: int) -> list[in
 
 def new_game(name: str, seed: int, humans: Sequence[str] = (), npr_names: Optional[Sequence[str]]
              = None, size: int = 16) -> GameState:
-    """Create a new game of `size` empires (4, 8, 9, 12 or 16; constants.GAME_SIZES).  `humans` are
+    """Create a new game of `size` empires (4, 8, 9, 12, 16, 20 or 25; constants.GAME_SIZES).  `humans` are
     the race names of the human seats (1..size); computer empires (NPRs) fill the rest."""
     if size not in K.GAME_SIZES:
         raise ValueError(f"a game has {', '.join(map(str, sorted(K.GAME_SIZES)))} empires")
@@ -125,7 +129,8 @@ def new_game(name: str, seed: int, humans: Sequence[str] = (), npr_names: Option
     board = side * BIN
     rng = Rng(seed, 0, "mapgen")
     st = GameState(name=name, seed=seed, turn=0, board=board, bins=side,
-                   empty_bins=[list(b) for b in empty])
+                   empty_bins=[list(b) for b in empty],
+                   vp_to_win=K.VICTORY_POINTS)            # the win target is fixed at creation (G-28)
     st.empires[0] = Empire(0, K.INDEPENDENT_NAME, kind=INDEPENDENT, eu=0, iu_depot=0)
 
     # Empire slots 1..size; humans take the first slots, NPRs the rest.
@@ -223,7 +228,8 @@ def new_game(name: str, seed: int, humans: Sequence[str] = (), npr_names: Option
         for stype in ("S", "T"):
             num = rng.new_number(used_numbers, 10000)
             used_numbers.add(num)
-            st.ships[num] = Ship(num, emp, stype, hx, hy, dx=hx, dy=hy, posture="N", role="SC",
+            st.ships[num] = Ship(num, emp, stype, hx, hy, dx=hx, dy=hy, posture="N",
+                                 role=default_role(stype),        # the Transport starts GC (G-29)
                                  home=home.id, ox=hx, oy=hy)
         e.seen_systems[home.id] = {"turn": 0, "name": home.name, "owner": emp}
     return st

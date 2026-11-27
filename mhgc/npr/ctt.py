@@ -267,7 +267,7 @@ def build(w, plan, threatened: set) -> None:
         cands = candidates(w, s.x, s.y, st.move, taken)
         if not cands:
             continue
-        if plan.build_ship(s, SHIP, "F", "SC", "a transport for a trade route", res,
+        if plan.build_ship(s, SHIP, "F", None, "a transport for a trade route", res,
                            purpose="trade"):
             builds[str(s.id)] = w.turn
             taken.add(cands[0][3].id)

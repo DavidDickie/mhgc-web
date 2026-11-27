@@ -1,7 +1,7 @@
 // The lobby: pick a game (or create one), then log in to a race, take an open seat, or log in as
 // the host (DECISIONS W-21, W-23).  Also leave, drop, final standings and export.
 "use strict";
-import { api, el, clear, $, toast, confirmBox, racesFor, keepSeat, forgetSeat, allSeats, setRaceName } from "./core.js";
+import { api, el, clear, $, toast, confirmBox, racesFor, keepSeat, forgetSeat, allSeats, setRaceName, S, byName } from "./core.js";
 import { openFinal, exportButton } from "./final.js";
 
 let onEnter = () => {};
@@ -99,13 +99,16 @@ export function initLobby(enter) {
   });
 }
 
-// Game sizes (DECISIONS W-13, W-26): bins per side and the empty bins (no home empire; open territory).
+// Game sizes (DECISIONS W-13, W-26, G-30): bins per side and the empty bins ("bx,by", as
+// constants.GAME_SIZES; no home empire; open territory).
 export const GAME_SIZES = [
   { size: 4, side: 2, empty: [], note: "four quadrants, a close-quarters galaxy" },
   { size: 8, side: 3, empty: ["1,1"], note: "the centre square is open territory" },
   { size: 9, side: 3, empty: [], note: "nine squares, nine empires" },
   { size: 12, side: 4, empty: ["1,1", "1,2", "2,1", "2,2"], note: "the four centre squares are open territory" },
   { size: 16, side: 4, empty: [], note: "the classic map" },
+  { size: 20, side: 5, empty: ["0,0", "2,1", "4,2", "1,3", "3,4"], note: "five open squares a knight's move apart: every empire has two open squares beside it" },
+  { size: 25, side: 5, empty: [], note: "the largest galaxy, twenty-five empires" },
 ];
 export function binDiagram(side, empty, cls = "bins") {
   const box = el("span", { class: cls, "aria-hidden": "true", style: { gridTemplateColumns: `repeat(${side}, 1fr)` } });
@@ -115,10 +118,10 @@ export function binDiagram(side, empty, cls = "bins") {
   return box;
 }
 function buildSizePicker() {
-  clear($("sizeOpts"), GAME_SIZES.map(z => el("label", { class: "size-opt", title: `${z.size} empires on a ${z.side * 25}x${z.side * 25} board: ${z.note}` },
+  clear($("sizeOpts"), GAME_SIZES.map(z => el("label", { class: "size-opt", title: `${z.size} empires (${z.side}×${z.side}) on a ${z.side * 25}×${z.side * 25} board: ${z.note}` },
     el("input", { type: "radio", name: "size", value: z.size, checked: z.size === 8 }),
     binDiagram(z.side, z.empty),
-    el("span", { class: "size-txt" }, el("b", {}, `${z.size}`), ` empires`, el("br"), el("span", { class: "dim" }, `${z.side * 25}×${z.side * 25}${z.size === 8 ? " · default" : ""}`)))));
+    el("span", { class: "size-txt" }, el("b", {}, `${z.size}`), ` empires`, el("br"), el("span", { class: "dim" }, `${z.side}×${z.side}, ${z.side * 25}×${z.side * 25}`), z.size === 8 ? el("span", { class: "dim" }, el("br"), "default") : null))));
 }
 function chosenSize() {
   const r = $("newGameForm").querySelector("input[name=size]:checked");
@@ -130,7 +133,7 @@ function sizeHint() {
   if (Number(f.elements.humans.value) > size) f.elements.humans.value = size;
   const host = f.elements.mode && f.elements.mode.value === "host";
   const n = Math.min(size, Number(f.elements.humans.value) || (host ? 0 : 1));
-  $("newGameHint").textContent = `${size} empires on a ${z.side * 25}×${z.side * 25} board (${z.note}). The other ${Math.max(0, size - n)} are computer empires.`;
+  $("newGameHint").textContent = `${size} empires (${z.side}×${z.side}) on a ${z.side * 25}×${z.side * 25} board (${z.note}). The other ${Math.max(0, size - n)} are computer empires. The first race to ${(S.ref && S.ref.victory_points) || 100} victory points wins.`;
 }
 
 const HOST_PW_KEY = "mhgcHostPw";
@@ -166,13 +169,13 @@ export async function openGame(gOrId, focus) {
   const dlg = $("gameDlg");
   dlg.dataset.gid = g.id;
   $("gameDlgH").textContent = g.name;
-  $("gameDlgInfo").textContent = `${g.finished ? `Finished: the ${g.winner} won` : `Turn ${g.turn}`} · ${g.size} empires: ${g.humans} human seat${g.humans === 1 ? "" : "s"}, ${g.computers} computer${g.host_only ? " · hosted without a race" : ""}`;
+  $("gameDlgInfo").textContent = `${g.finished ? `Finished: the ${g.winner} won` : `Turn ${g.turn}`} · ${g.size} empires: ${g.humans} human seat${g.humans === 1 ? "" : "s"}, ${g.computers} computer${g.vp_to_win ? ` · first to ${g.vp_to_win} VP wins` : ""}${g.host_only ? " · hosted without a race" : ""}`;
   const held = new Set(racesFor(g.id).map(r => r.seat));
   // play an existing race: the claimed human seats
   const claimed = g.seats.filter(s => !s.open && !s.computer);
   const lf = $("loginForm");
   lf.hidden = !claimed.length;
-  clear($("loginRace"), claimed.map(s => el("option", { value: s.seat, disabled: !s.password, selected: false },
+  clear($("loginRace"), byName(claimed, s => s.race).map(s => el("option", { value: s.seat, disabled: !s.password, selected: false },
     `${s.race} (${s.player})${s.password ? "" : " - no password yet"}${held.has(s.seat) ? " - logged in here" : ""}`)));
   const first = claimed.find(s => s.password && !held.has(s.seat)) || claimed.find(s => s.password);
   if (first) $("loginRace").value = String(first.seat);

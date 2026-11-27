@@ -90,6 +90,7 @@ class Plan:
 
     def build_ship(self, s, code: str, posture="N", role="SC", why="", reserve=0,
                    purpose="ships") -> bool:
+        """`role` None leaves it to the engine's default for the class (transports GC: G-29)."""
         if not self.can_ship(s, code, reserve):
             return False
         st = SHIP_TYPES[code]

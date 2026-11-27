@@ -269,7 +269,7 @@ def _build(w, plan, threatened, targets, n_idle) -> None:
     for s in srcs[:3]:
         if len(trans) >= want:
             break
-        if plan.build_ship(s, "T", "F", "SC", "a transport for colonists", reserve(w),
+        if plan.build_ship(s, "T", "F", None, "a transport for colonists", reserve(w),
                            purpose="expansion"):
             trans.append(None)
 

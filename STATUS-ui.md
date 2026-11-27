@@ -241,6 +241,12 @@ Dave: "not seeing previously scanned squares with a faded grey background". It w
 
 `mhgc/npr.py`, `tests/test_npr*.py` and STATUS.md were not touched. No git commits were made.
 
+## 20- and 25-empire games (2026-11-24, G-30)
+
+- **New game dialog:** seven size cards in an auto-fill grid (`.size-opts`, two rows in the dialog); the 20 and 25 cards show 5x5 diagrams (20 with its five dashed knight's-move bins) and read "5×5, 125×125"; every card now shows its bins and board. The human-seat maximum follows the size (up to 25).
+- **Map at 125:** no change needed except the axis labels: the label just before the seam (120, five squares from 0) is skipped when labels are every 20 squares. Coverage image and minimap 125x125, torus copies every 125, zoom-out fits the whole board, "Go to system" reaches squares past 99.
+- **Browser:** `uitest/size5x5.py` (24 checks): `size25-01-new-game.png`, `size25-02-map-home.png`, `size25-03-map-zoomed-out.png`, `size25-04-goto-120-3.png`, `size20-01-new-game.png` .. `size20-04-lobby.png`. `flow.py` now expects seven cards and runs at `MHGC_SIZE=20` or `25`.
+
 ## Four-empire game (2026-11-16)
 
 - **New game dialog:** five size cards; "4 empires, 50x50" with a 2x2 diagram is first, 8 stays the default (`lobby.js GAME_SIZES`, `.size-opts` grid of 5). The human-seat maximum follows the size (4). The lobby line shows `4 empires (50x50)` and a 2x2 mini diagram.

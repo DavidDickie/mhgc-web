@@ -1,7 +1,7 @@
 // Orders: forms generated from /api/orders/catalogue, the draft list (edit, delete, reorder),
 // "Check orders", submit / withdraw, and the classic text pane for veterans.
 "use strict";
-import { S, BOARD, fleetSpeed, api, el, clear, $, toast, emit, on, canOrder, isHistory, confirmBox, ApiError, seatName, shipClass, troopName, techName, xy, giftableRaces, NOT_AT_WAR_CODES } from "./core.js";
+import { S, BOARD, fleetSpeed, api, el, clear, $, toast, emit, on, canOrder, isHistory, confirmBox, ApiError, seatName, shipClass, troopName, techName, xy, giftableRaces, NOT_AT_WAR_CODES, byName } from "./core.js";
 import { knownSystems, ownFleets, findOwnFleet, placeName, draftShipCount } from "./world.js";
 import { helpFor } from "./help.js";
 
@@ -195,7 +195,7 @@ function troopOptions(code, values) {
 }
 function raceOptions(code) {
   // GS is never offered for a race you are at war with (your own stance; theirs is hidden)
-  return giftableRaces(code).map(r => [r.name, `${r.name} (${r.kind === "npr" ? "computer" : r.kind})`]);
+  return byName(giftableRaces(code)).map(r => [r.name, `${r.name} (${r.kind === "npr" ? "computer" : r.kind})`]);
 }
 // system orders, plus the orders whose destination must be your own system (ML, WTP, WTPF)
 const OWN_SYSTEM_CODES = new Set(["NSY", "CSP", "CAP", "CAPN", "SISD", "CI", "BCU", "BS", "BI", "DI", "BT", "DT", "BSP", "DSP", "TP", "SR", "SSI", "ML", "WTP", "WTPF"]);
@@ -297,6 +297,8 @@ function buildField(entry, a, values) {
   } else if (a.kind === "choice") {
     const opts = a.choices.map(c => [c, a.labels && a.labels[c] ? `${c} - ${a.labels[c]}` : c]);
     control = choiceSelect(name, opts, val, a.optional);
+    // BS role (DECISIONS G-29): say what the default is: transports start GC, the others SC
+    if (code === "BS" && name === "role" && a.optional) control.options[0].textContent = "(default: GC for transports, SC for the others)";
   } else if (a.kind === "speed") {
     control = choiceSelect(name, [["A", "A - automatic (slowest ship)"], ...[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => [n, String(n)])], val ?? "A", false);
   } else if (a.kind === "ints") {
@@ -338,7 +340,7 @@ function buildField(entry, a, values) {
     control = el("input", { type: "number", name, id, min: 0, value: val ?? "", list: listId, required: true });
     extra = el("datalist", { id: listId }, S.view.scans.ships.map(s => el("option", { value: s.number }, `${s.owner_name} ${shipClass(s.type)} @${placeName(s.x, s.y)}`)));
   } else if (name === "fleet") {
-    control = choiceSelect(name, ownFleets().map(f => [f.name, `${f.name} (${draftShipCount(f)} ships @${placeName(f.x, f.y)})${f.forming ? " forming" : ""}`]), val, a.optional);
+    control = choiceSelect(name, byName(ownFleets()).map(f => [f.name, `${f.name} (${draftShipCount(f)} ships @${placeName(f.x, f.y)})${f.forming ? " forming" : ""}`]), val, a.optional);
   } else if (name === "into" && code === "MGF") {
     // merge fleets (DECISIONS G-27): your other fleets on the same square as the first one
     control = choiceSelect(name, mergeTargets(values.fleet).map(f => [f.name, `${f.name} (${draftShipCount(f)} ships @${placeName(f.x, f.y)})${f.forming ? " forming" : ""}`]), val, a.optional);
@@ -348,11 +350,11 @@ function buildField(entry, a, values) {
     const opts = raceOptions(code);
     control = opts.length || NOT_AT_WAR_CODES.has(code) ? choiceSelect(name, opts, val, a.optional) : el("input", { name, id, value: val ?? "", required: true, placeholder: "race name" });
   } else if ((name === "system" || name === "to") && (OWN_SYSTEM_CODES.has(code))) {
-    control = choiceSelect(name, S.view.systems.map(s => [s.name, `${s.name} @${xy(s.x, s.y)}`]), val, a.optional);
+    control = choiceSelect(name, byName(S.view.systems).map(s => [s.name, `${s.name} @${xy(s.x, s.y)}`]), val, a.optional);
   } else if (name === "system") {
     const listId = "dl_system";
     control = el("input", { name, id, value: val ?? "", list: listId, required: true, autocomplete: "off", placeholder: "system name" });
-    extra = el("datalist", { id: listId }, knownSystems().filter(s => s.name).map(s => el("option", { value: s.name }, `${s.mine ? "yours" : s.owner_name || "unknown"} @${xy(s.x, s.y)}`)));
+    extra = el("datalist", { id: listId }, byName(knownSystems().filter(s => s.name)).map(s => el("option", { value: s.name }, `${s.mine ? "yours" : s.owner_name || "unknown"} @${xy(s.x, s.y)}`)));
   } else if (name === "count" && (code === "BS" || code === "BCU")) {
     // how many to build (DECISIONS G-19): a number box, 1 by default
     control = el("input", { type: "number", name, id, inputmode: "numeric", min: a.lo ?? 1, max: a.hi ?? 50, step: 1, value: val ?? 1 });
@@ -643,5 +645,5 @@ export function renderOrdersPanel(box) {
 export function mergeTargets(name) {
   const f = findOwnFleet(name);
   if (!f) return [];
-  return ownFleets().filter(g => g.name !== f.name && g.x === f.x && g.y === f.y);
+  return byName(ownFleets().filter(g => g.name !== f.name && g.x === f.x && g.y === f.y));
 }

@@ -1,3 +1,3 @@
 """Mega Hyper Galactic Conquest: pure-Python game engine (no web dependencies)."""
-__version__ = "1.0.2"
-__version_date__ = "2026-11-21"   # bump both with every zip rebuild (CHANGELOG.md)
+__version__ = "5.0.4"
+__version_date__ = "2026-11-27"   # bump both with every zip rebuild (CHANGELOG.md)

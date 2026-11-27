@@ -39,8 +39,8 @@ render.yaml      Render blueprint (see DEPLOY.md)
 ```
 
 ## How a game works
-- A game has 4, 8 (the default), 9, 12 or 16 empires on a wrap-around board (50x50 for 4,
-  75x75 for 8 and 9, 100x100 for 12 and 16). The creator picks the size and how many are human seats; the rest are
+- A game has 4, 8 (the default), 9, 12, 16, 20 or 25 empires on a wrap-around board (50x50 for 4,
+  75x75 for 8 and 9, 100x100 for 12 and 16, 125x125 for 20 and 25). The creator picks the size and how many are human seats; the rest are
   computer empires, which name their worlds and boast in the chat (off / quiet / normal).
 - A seat is tied to the browser that took it (a random token in localStorage, sent as the
   `X-Seat-Token` header). No passwords.

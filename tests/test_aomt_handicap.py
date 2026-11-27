@@ -190,7 +190,7 @@ def test_handicapped_host_reaching_the_target_does_not_end_the_game(tmp_path):
     c.post(f"/api/games/{gid}/force", headers=H(t1))
     g = c.get(f"/api/games/{gid}").json()
     v1 = c.get(f"/api/games/{gid}/view", headers=H(t1)).json()
-    assert v1["empire"]["vp"] >= K.VICTORY_POINTS
+    assert v1["empire"]["vp"] >= v1["game"]["vp_to_win"] == K.VICTORY_POINTS
     assert g["finished"] is False and g["winner"] is None
 
 

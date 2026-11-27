@@ -33,7 +33,7 @@ def _base_names(race: str, persona: str, eid: int) -> list[str]:
     if race in RACE_NAMES:
         return list(RACE_NAMES[race])
     pool = PERSONA_NAMES.get(persona) or PERSONA_NAMES["builder"]
-    return [n for i, n in enumerate(pool) if i % 16 == (eid - 1) % 16]
+    return [n for i, n in enumerate(pool) if i % K.MAX_EMPIRES == (eid - 1) % K.MAX_EMPIRES]
 
 
 def _candidates(nm: dict, race: str, eid: int):

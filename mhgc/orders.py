@@ -19,6 +19,7 @@ import re
 from dataclasses import dataclass, field
 from typing import Any, ClassVar, Optional
 
+from .data import constants as K
 from .data.artifacts import ARTIFACTS, SPY_KEY
 from .data.ships import SHIP_TYPES
 from .data.troops import TROOP_TYPES
@@ -86,7 +87,7 @@ class Arg:
     hi: Optional[int] = None
 
 
-# Argument kinds: int (any integer), nat (>= 0), coord (0..99), str (a name token),
+# Argument kinds: int (any integer), nat (>= 0), coord (0..124, the largest board), str (a name token),
 # choice (one of `choices`), ints (1..10 integers), text (rest of the line).
 def _c(name, *choices, optional=False):
     return Arg(name, "choice", optional, tuple(choices))
@@ -296,7 +297,9 @@ def _convert(code: str, a: Arg, value: Any) -> Any:
         v = value if isinstance(value, int) and not isinstance(value, bool) else _int(str(value),
                                                                                        a.name)
         lo = a.lo if a.lo is not None else {"nat": 0, "coord": 0, "pct": 0}.get(k)
-        hi = a.hi if a.hi is not None else {"coord": 99, "pct": 100}.get(k)
+        # a coordinate is checked against the game's own board when the order runs
+        # (context.abs_xy); here only against the largest board (0..124, G-30; was 0..99)
+        hi = a.hi if a.hi is not None else {"coord": K.MAX_BOARD - 1, "pct": 100}.get(k)
         if lo is not None and v < lo:
             if k == "nat":
                 raise OrderSyntaxError(f"{_cap(a.name)} can't be negative.")

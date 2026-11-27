@@ -215,7 +215,7 @@ def final_view(g, viewer: Optional[int]) -> dict:
     # a host's race that couldn't win (W-28) is listed after the others, without a rank
     final = sorted(last, key=lambda x: (x["id"] != g.state.winner, bool(x.get("unranked")),
                                         -x["vp"], -x["systems"], -x["pop"], x["id"]))
-    return {"game": g.summary(), "viewer": viewer, "vp_to_win": K.VICTORY_POINTS,
+    return {"game": g.summary(), "viewer": viewer, "vp_to_win": g.state.vp_to_win,
             "winner": g.state.winner, "empires": emp, "turns": turns, "series": series,
             "final": [{k: x[k] for k in ("id", "name", "human", "kind", "vp", "systems", "pop",
                                           "nnp", "eu", "iu_depot", "techs", "warships",
@@ -257,7 +257,7 @@ def export_zip(g, seat: int, reason: str) -> bytes:
         "game": {"id": g.gid, "name": g.meta["name"], "seed": g.meta.get("seed"),
                  "size": g.size, "board": st.board, "bins": st.bins,
                  "empty_bins": [list(b) for b in st.empty_bins], "humans": g.humans,
-                 "chatter": g.chatter, "vp_to_win": K.VICTORY_POINTS,
+                 "chatter": g.chatter, "vp_to_win": st.vp_to_win,
                  "created": g.meta.get("created"), "turn": st.turn,
                  "finished": st.winner is not None, "winner": st.winner},
         "empires": _empires(g, None),

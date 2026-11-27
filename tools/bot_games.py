@@ -182,7 +182,7 @@ def play(out: Path, seed: int, size: int = 16, turns: int = 70, mode: str = "npr
     man = {"format": "mhgc-analysis-1", "reason": f"tools/bot_games.py {mode}",
            "accept_peace": accept_peace,
            "game": {"name": st.name, "seed": seed, "size": size, "board": st.board,
-                    "humans": len(humans), "vp_to_win": K.VICTORY_POINTS, "turn": st.turn,
+                    "humans": len(humans), "vp_to_win": st.vp_to_win, "turn": st.turn,
                     "finished": st.winner is not None, "winner": st.winner, "mode": mode,
                     "swap": swap},
            "empires": [{"id": eid, "name": e.name, "human": eid in hum_ids,

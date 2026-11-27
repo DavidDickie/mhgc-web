@@ -1,7 +1,7 @@
 // MHGC web UI entry point: routing between the lobby and a game, the top bar, the dock tabs, the
 // map wiring, history browsing and polling.
 "use strict";
-import { S, api, el, clear, $, on, emit, toast, confirmBox, seatFor, pinSeat, forgetSeat, setRaceName, fmt, isHistory, seatName, xy, setBoard, BOARD, HOME } from "./core.js";
+import { S, api, el, clear, $, on, emit, toast, confirmBox, seatFor, pinSeat, forgetSeat, setRaceName, fmt, isHistory, seatName, xy, setBoard, BOARD, HOME, byName } from "./core.js";
 import { GalaxyMap } from "./map.js";
 import { knownSystems } from "./world.js";
 import { initLobby, showLobby, openGame } from "./lobby.js";
@@ -131,7 +131,7 @@ function renderTop() {
   if (isHistory()) clear(hb, el("span", {}, `You are looking at turn ${v.game.turn}. The map and results are as they were then.`),
     el("button", { type: "button", class: "small", onclick: () => showTurn(v.current_turn) }, "Back to the current turn"));
   // search list
-  clear($("searchList"), knownSystems().filter(s => s.name).map(s => el("option", { value: s.name }, `${s.mine ? "yours" : s.owner_name || "unknown"} @${xy(s.x, s.y)}`)));
+  clear($("searchList"), byName(knownSystems().filter(s => s.name)).map(s => el("option", { value: s.name }, `${s.mine ? "yours" : s.owner_name || "unknown"} @${xy(s.x, s.y)}`)));
 }
 
 // The Check button carries the draft's warning count (DECISIONS G-20): "Check orders ⚠ 2".

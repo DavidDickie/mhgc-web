@@ -47,7 +47,7 @@ def test_every_race_is_ranked_and_a_computer_empire_can_win():
     assert st.empires[1].ranks["POP"] == 2             # second, behind the computer empire
     base = 2 * K.VP_PER_SYSTEM // 2                     # one system, no techs
     assert npr.vp == base + sum(K.VP_STAT_BONUS.get(npr.ranks[s], 0) for s in K.VP_STATS)
-    npr.vp = K.VICTORY_POINTS
+    npr.vp = st.vp_to_win
     stats.check_victory(ctx)
     assert st.winner == NPR_ID and ctx.res.events_of(1, "victory")
 

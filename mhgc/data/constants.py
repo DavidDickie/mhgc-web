@@ -7,7 +7,7 @@ BOARD = 100                      # rules:225 100x100, wraps both ways (the class
 HOME_REL = (50, 50)              # each empire sees its home at 50,50 (gcio.c:990; rules:1538)
 #                                  on a smaller board the home is at its centre (geometry.home_rel)
 BIN = 25                         # side of one home bin (gcugen.c)
-# Game sizes (Dave 2026-11-13 and 2026-11-16, DECISIONS W-13 and W-26): empires -> (bins per side, empty bins as (bx, by)).
+# Game sizes (Dave 2026-11-13, 11-16 and 11-24, DECISIONS W-13, W-26 and G-30): empires -> (bins per side, empty bins as (bx, by)).
 # The board side is BIN * bins per side.  Empty bins get their systems but no home empire.
 GAME_SIZES = {
     4: (2, ()),                                        # 50x50, four quadrants (Dave 2026-11-16)
@@ -15,18 +15,28 @@ GAME_SIZES = {
     9: (3, ()),                                        # 75x75
     12: (4, ((1, 1), (1, 2), (2, 1), (2, 2))),         # 100x100, the 4 centre bins empty
     16: (4, ()),                                       # 100x100, the classic map
+    # 125x125, one empty bin in every row and column in a knight's-move pattern (G-30): the empty
+    # bin in row r (by = r) is in column bx = 2r mod 5.  On the torus every
+    # home bin has exactly 2 empty bins among its 8 neighbours (one side-on, one corner-on), and
+    # no two empty bins touch.  Stored as (bx, by) like the rest.
+    20: (5, ((0, 0), (2, 1), (4, 2), (1, 3), (3, 4))),
+    25: (5, ()),                                       # 125x125, every bin a home
 }
+MAX_BOARD = BIN * max(side for side, _ in GAME_SIZES.values())   # 125: the parser's coordinate cap
 DEFAULT_GAME_SIZE = 8            # the lobby's default (Dave 2026-11-13)
 CHATTER_LEVELS = ("off", "quiet", "normal")   # computer empires' boasts in chat (W-14)
 
 # --- Empires ---------------------------------------------------------------------------------
 INDEPENDENT = 0                  # empire 0: rebels / unowned systems (gcrun.c:574, rules:236)
-MAX_EMPIRES = 16                 # home positions on the generated map (gcugen.c 4x4 bins)
+MAX_EMPIRES = 25                 # home positions on the largest map (5x5 bins, G-30; gcugen.c had 4x4)
 DEFAULT_RACE_NAMES = [
     # Names from Dave's own examples in the rules (combat example, sample report, orders).
     "Porkines", "Groachi", "Barnacle_Boys", "Grunts", "Freepeople", "Haldermen", "Boviners",
     "Badhombres", "Ravaging_Bugs", "Hopeless", "Blutos", "Mangos", "Gollywogs", "Bratwursts",
     "Googly_eyes", "Ratfinks",
+    # for the 20- and 25-empire maps (G-30), in the same spirit
+    "Snorklers", "Wombatians", "Glorpers", "Fuzzballs", "Mudskippers", "Blobsters", "Noodlers",
+    "Space_Hamsters", "Cogwheels",
 ]
 INDEPENDENT_NAME = "Rebels"
 NAME_MAX = 12                    # system/leader/fleet names (rules:1920, 2310)
@@ -134,7 +144,8 @@ EVENTS_START_TURN = 10
 CD_ROM_START_TURN = 6
 
 # --- Victory (rules:197-220) -----------------------------------------------------------------
-VICTORY_POINTS = 90                  # Dave 2026-11-19 (was 100): see DECISIONS G-26
+VICTORY_POINTS = 100                 # the rules' target, for new games (Dave 2026-11-22, G-28; G-26 had 90)
+LEGACY_VICTORY_POINTS = 90           # saves without GameState.vp_to_win: they played to 90 under G-26
 VP_PER_SYSTEM = 2
 VP_STAT_BONUS = {1: 2, 2: 1}
 VP_STATS = ("WAR", "NWR", "STP", "POP", "HAP", "PRD", "CTS", "GWR", "TEC")

@@ -437,8 +437,8 @@ pre.classic-report { font-family: var(--mono); font-size: .8em; line-height: 1.2
   background: var(--panel); border: 1px solid var(--line2); border-radius: 8px; padding: .6rem .8rem; box-shadow: 0 8px 40px #000a; }
 .classic-wrap.wide pre.classic-report { flex: 1; max-height: none; font-size: .9em; }
 
-/* ---- game size picker (New game) and the lobby's bin diagrams (DECISIONS W-13) ---- */
-.size-opts { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .5rem; }
+/* ---- game size picker (New game) and the lobby's bin diagrams (DECISIONS W-13, G-30) ---- */
+.size-opts { display: grid; grid-template-columns: repeat(auto-fill, minmax(5.4rem, 1fr)); gap: .5rem; }
 .size-opt { display: flex !important; flex-direction: column; align-items: center; gap: .3rem; padding: .45rem .3rem;
   border: 1px solid var(--line); border-radius: var(--radius); cursor: pointer; text-align: center; }
 .size-opt:has(input:checked) { border-color: #4ea1ff; background: #4ea1ff1a; }

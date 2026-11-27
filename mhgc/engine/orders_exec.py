@@ -12,7 +12,7 @@ from typing import Callable, Optional
 from .. import geometry as G
 from ..data import constants as K
 from ..data.artifacts import ARTIFACTS, SPY_EU_COST, SPY_IU_COST, SPY_KEY
-from ..data.ships import SHIP_TYPES
+from ..data.ships import SHIP_TYPES, default_role
 from ..data.techs import FUTURE_TECH, TECHS, missing_prereqs
 from ..data.troops import TROOP_TYPES
 from ..model import (GUARD, HUMAN, INTERCEPT, MOVE, MOVE_TO_SYSTEM, NPR, STAND, Fleet, Ship, Spy,
@@ -208,8 +208,10 @@ def _check_build(ctx, s: System, need: float):
 # unit creation
 # ---------------------------------------------------------------------------------------------
 
-def create_ship(ctx, owner, stype, s: System, posture="N", role="SC") -> Ship:
+def create_ship(ctx, owner, stype, s: System, posture="N", role=None) -> Ship:
+    """A new ship; with no role, its class's default (transports GC, the others SC: G-29)."""
     st = ctx.state
+    role = role or default_role(stype)
     num = ctx.rng.new_number(st.ships.keys(), 10000)
     sh = Ship(num, owner, stype, s.x, s.y, dx=s.x, dy=s.y, posture=posture, role=role,
               home=s.id, built_turn=st.turn, ox=s.x, oy=s.y)
@@ -1056,7 +1058,7 @@ def _bs(ctx, eid, o):
         m = ctx.cost_mult(s)
         _need_iu(s, st.iu_cost * m)
         _pay_eu(ctx, eid, st.eu_cost * m)
-        sh = create_ship(ctx, eid, st.code, s, o.posture or "N", o.role or "SC")
+        sh = create_ship(ctx, eid, st.code, s, o.posture or "N", o.role)
         _spend(ctx, eid, s, st.iu_cost * m, st.eu_cost * m)
         ctx.builds[s.id] += 1
         return sh.number, []

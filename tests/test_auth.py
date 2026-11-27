@@ -309,7 +309,7 @@ def test_no_hashes_or_passwords_in_any_response(tmp_path, monkeypatch):
     texts.append(c.post(f"/api/games/{gid}/seats/2/reset-password", headers=H(t1),
                         json={"password": "temp-22"}).text)
     texts.append(c.post(f"/api/games/{gid}/leave", headers=H(t2b)).text)
-    monkeypatch.setattr(K, "VICTORY_POINTS", 1)
+    c.app.state.games[gid].state.vp_to_win = 1          # the game's own target (G-28)
     c.post(f"/api/games/{gid}/force", headers=H(t1))
     texts.append(c.get(f"/api/games/{gid}/final").text)
     z = zipfile.ZipFile(io.BytesIO(c.get(f"/api/games/{gid}/export", headers=H(t1)).content))

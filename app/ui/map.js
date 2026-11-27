@@ -546,18 +546,20 @@ export class GalaxyMap {
       for (let y = y0; y <= y1; y++) if (wrap(y) % 10) line(0, this.sy(y - .5) | 0, W, this.sy(y - .5) | 0);
     }
     const stepL = sc >= 7 ? 10 : 20;
+    // a label every stepL squares, but not one crowding the seam's 0 (120 then 0 on 125x125, G-30)
+    const labelled = v => v % stepL === 0 && v <= BOARD - stepL / 2;
     g.font = "11px system-ui, sans-serif"; g.fillStyle = "#8f9bb6";
     for (let x = x0; x <= x1; x++) {
       if (wrap(x) % 10) continue;
       g.strokeStyle = wrap(x) === 0 ? "#7cc0ff40" : "#ffffff1c";
       line(this.sx(x - .5) | 0, 0, this.sx(x - .5) | 0, H);
-      if (wrap(x) % stepL === 0) g.fillText(String(wrap(x)), this.sx(x) - 6, 14);
+      if (labelled(wrap(x))) g.fillText(String(wrap(x)), this.sx(x) - 6, 14);
     }
     for (let y = y0; y <= y1; y++) {
       if (wrap(y) % 10) continue;
       g.strokeStyle = wrap(y) === 0 ? "#7cc0ff40" : "#ffffff1c";
       line(0, this.sy(y - .5) | 0, W, this.sy(y - .5) | 0);
-      if (wrap(y) % stepL === 0) g.fillText(String(wrap(y)), 4, this.sy(y) + 4);
+      if (labelled(wrap(y))) g.fillText(String(wrap(y)), 4, this.sy(y) + 4);
     }
   }
 

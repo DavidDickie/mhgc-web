@@ -2,7 +2,7 @@
 // Selecting a fleet or ship makes it the "focused unit": Move then asks for a square on the map
 // (or right-click / M on the map moves it directly).
 "use strict";
-import { S, HOME, el, clear, $, emit, fmt, xy, raceName, relColor, shipClass, troopName, canOrder, fleetSpeed, dist, toast, giftableRaces, NOT_AT_WAR_CODES, systemColor, systemOwnerLabel, habText, habAsOf, HAB_LABEL } from "./core.js";
+import { S, HOME, el, clear, $, emit, fmt, xy, raceName, relColor, shipClass, troopName, canOrder, fleetSpeed, dist, toast, giftableRaces, NOT_AT_WAR_CODES, systemColor, systemOwnerLabel, habText, habAsOf, HAB_LABEL, byName } from "./core.js";
 import { key, ownFleets, findOwnFleet, effectiveFleet, placeName, draftShipCount } from "./world.js";
 import { openOrder, addOrder, claimSystem, replaceOrder, classicText, describeOrder, catEntry, saveDraft, rowToDict, mergeTargets } from "./orders.js";
 import { cargoText } from "./panels.js";
@@ -424,7 +424,7 @@ function shipList(q, may) {
     const tools = el("div", { class: "fleet-tools" }, el("label", { class: "selall" }, allBox, "Select all"));
     const acts = el("div", { class: "actions" }, makeBtn);
     if (q.fleets.length) {
-      const fsel = el("select", { id: "addToFleetSel", "aria-label": "Fleet to add the ships to" }, q.fleets.map(f => el("option", { value: f.name }, `${f.name}${f.forming ? " (forming)" : ""}`)));
+      const fsel = el("select", { id: "addToFleetSel", "aria-label": "Fleet to add the ships to" }, byName(q.fleets).map(f => el("option", { value: f.name }, `${f.name}${f.forming ? " (forming)" : ""}`)));
       addBtn = btn("Add to fleet", () => { if (chosen().length) addToFleet(fsel.value, chosen()); }, "small");
       addBtn.id = "addToFleetBtn";
       acts.append(addBtn, fsel);

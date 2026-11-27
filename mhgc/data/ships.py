@@ -89,6 +89,14 @@ SHIP_GROUPS: tuple[tuple[str, str], ...] = (
 TRANSPORT_CLASSES = frozenset({"T", "MT"})
 
 
+def default_role(code: str) -> str:
+    """The combat role a new ship starts in when none is given (Dave 2026-11-22, DECISIONS G-29):
+    the transports (Transport, MassTransit: TRANSPORT_CLASSES, the rules' transports) start in
+    Ground Combat, every other class in Space Combat (the rules' BS default "N SC",
+    rules:2028).  The armed cargo ships (ArmedTrans, Multirole_CS) are warships and stay SC."""
+    return "GC" if code in TRANSPORT_CLASSES else "SC"
+
+
 def ship_group(code: str) -> str:
     if code in SCOUT_CLASSES:
         return "scout"

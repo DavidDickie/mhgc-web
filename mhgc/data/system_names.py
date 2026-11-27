@@ -86,31 +86,86 @@ RACE_NAMES: dict[str, tuple[str, ...]] = {
         "Whisker_Gap", "Rodentia", "Turncoat", "Weaselton", "Cheddarholm", "Fink_Hole",
         "Double_Cross", "Squeakton", "Stoolpigeon", "Ratchet", "Tailspin", "Crumb_Snatch",
         "Burrow", "Rat_Race"),
+    # the races added for the 20- and 25-empire maps (G-30)
+    "Snorklers": (
+        "Snorkelton", "Deep_Breath", "Bubbleport", "Flipper_Bay", "Goggle_Reef", "Lagoonia",
+        "Air_Hose", "Coralholm", "Wetsuit", "Plunge_Pool", "Fathomere", "Gurgle_Gulf",
+        "Mask_Rock", "Splashdown", "Divers_Rest", "Tide_Tunnel", "Seaweed_Sea", "Blowhole",
+        "Bends_Bay", "Shallows"),
+    "Wombatians": (
+        "Wombatia", "Burrowmere", "Cube_Hollow", "Dirtnap", "Pouchton", "Diggers_Den",
+        "Grassmunch", "Stumpy_Leg", "Snugburrow", "Outback", "Bushland", "Wallowby",
+        "Dust_Bowl", "Tunnelwick", "Sleepy_Hill", "Rootcellar", "Furrowfield", "Nightgrub",
+        "Wombat_Gap", "Mound_Prime"),
+    "Glorpers": (
+        "Glorpia", "Oozeville", "Sludge_Pit", "Gloopmire", "Slurpton", "Jellymoor",
+        "Splorch", "Drool_Basin", "Blorp_Prime", "Squelch", "Gunkfield", "Slimeholm",
+        "Goober_Bay", "Gelatinia", "Puddleton", "Muckluck", "Viscosa", "Wobble_Rock",
+        "Glorp_Major", "Mucilage"),
+    "Fuzzballs": (
+        "Fluffhaven", "Lintworld", "Purrsville", "Fuzzopolis", "Static_Fur", "Furball_Bay",
+        "Pom_Pom", "Cuddle_Cove", "Shedmoor", "Hairball", "Softpaw", "Furrytown",
+        "Dander_Dell", "Plushia", "Snugglebury", "Down_Feather", "Velveteen", "Moppet",
+        "Dustbunny", "Fuzz_Major"),
+    "Mudskippers": (
+        "Mudflat", "Skipton", "Brackish", "Silt_Hollow", "Estuaria", "Mudhole",
+        "Gill_Gap", "Hopalong", "Ooze_Bank", "Low_Water", "Bogside", "Marshmere",
+        "Fin_Walker", "Reedbed", "Slither_Bay", "Wetland", "Puddle_Jump", "Sloshport",
+        "Tideflat", "Mire_Prime"),
+    "Blobsters": (
+        "Blobton", "Globule", "Amorphia", "Lumpville", "Shapeless", "Bulge_Bay", "Engulf",
+        "Absorbia", "Dollop", "Big_Blob", "Splat_City", "Jigglemoor", "Gobbet", "Plop_Point",
+        "Blobfield", "Morphmoor", "Squidge", "Gooberton", "Ooze_Prime", "Lumpen"),
+    "Noodlers": (
+        "Spaghettia", "Ramen_Rock", "Linguine", "Udonia", "Al_Dente", "Fettuccine",
+        "Slurp_City", "Noodle_Nook", "Macaroni", "Penne_Point", "Lasagna", "Broth_Bay",
+        "Soba_Sound", "Vermicelli", "Ravioli", "Rigatoni", "Orzo_Major", "Chopstick",
+        "Tagliatelle", "Gnocchi"),
+    "Space_Hamsters": (
+        "Wheelworld", "Cheek_Pouch", "Seedstash", "Hamsterdam", "Squeakwheel", "Sawdust",
+        "Water_Drip", "Nibblesby", "Gerbilton", "Tubeway", "Cage_Prime", "Sunflower",
+        "Fluffcheek", "Runaround", "Pellet_Pile", "Treadmill", "Burrowbox", "Whiskerby",
+        "Hamhock", "Nestbed"),
+    "Cogwheels": (
+        "Gearhaven", "Sprocket", "Clockwork", "Ratchetton", "Flywheel", "Cam_Shaft",
+        "Spindle", "Gearbox", "Pistonia", "Torque_Town", "Axle_Point", "Lubrication",
+        "Cotter_Pin", "Escapement", "Bolt_Bay", "Mainspring", "Grindstone", "Tick_Tock",
+        "Rivetton", "Pinion"),
 }
 
-# For computer empires with any other race name, by personality.  A bot takes every 16th name
-# from its personality's pool, offset by its empire id, so no two bots share a name.
+# For computer empires with any other race name, by personality.  A bot takes every 25th name
+# (MAX_EMPIRES) from its personality's pool of 50, offset by its empire id, so no two bots share a
+# name, at every game size up to 25 empires (G-30; was every 16th of 32).
 PERSONA_NAMES: dict[str, tuple[str, ...]] = {
     "aggressive": (
         "Doomspire", "Skullcrag", "Ironfist", "Warmonger", "Blitzhold", "Bonecrusher",
         "Ravager", "Gutpunch", "Spikemoor", "Grimhold", "Blood_Moon", "Wreckage", "Havoc",
         "Carnage", "Smashmouth", "Nailbiter", "Battlecry", "Fury_Road", "Sledge", "Warpath",
         "Killjoy", "Rampart", "Gauntlet", "Crushpoint", "Thunderdome", "Mayhem", "Bombast",
-        "Scorchmark", "Rubblehead", "Ironclad", "Shrapnel", "Bludgeon"),
+        "Scorchmark", "Rubblehead", "Ironclad", "Shrapnel", "Bludgeon",
+        "Warhammer", "Bayonet", "Siegeworks", "Bloodfang", "Brimstone", "Torment", "Ravenrock",
+        "Deathgrip", "Firestorm", "Gorehold", "Bulwark", "Battleaxe", "Scourge", "Vengeance",
+        "Hellmouth", "Steelfang", "Onslaught", "Pillage"),
     "builder": (
         "Tidy_Acres", "Smugsworth", "Fine_Estate", "Neatfield", "Lawnmore", "Pavedvale",
         "Prim_Point", "Brickhaven", "Tidyville", "Polished", "Blueprint", "Masonry",
         "Cornerstone", "Quaintly", "Picket_Fence", "Spotless", "Upkeep", "Well_Kept",
         "Prosperia", "Gleamwood", "Our_Best_One", "Showcase", "Deluxe", "Model_Town",
         "Orderly", "Trimhedge", "Starched", "Exquisite", "Laurels", "Grand_Plan", "Mortarboard",
-        "Superior"),
+        "Superior",
+        "Gardenia", "Manicured", "Fine_China", "Heritage", "Bellwether", "Craftsman",
+        "Silverware", "Grandview", "Proud_Acres", "Tasteful", "Pinnacle", "Highbrow",
+        "Topiary", "Gold_Leaf", "Elegance", "Freshpaint", "Landmark", "Well_Built"),
     "opportunist": (
         "Finders_Keep", "Loophole", "Sly_Corner", "Backroom", "Fine_Print", "Swindle",
         "Shadyside", "Sidedeal", "Knockoff", "Fence_Post", "Grifton", "Bargain_Bin",
         "Smokescreen", "Pickpocket", "Cunningham", "Foxden", "Rugpull", "Wink_Wink", "Sleight",
         "Slipaway", "Quick_Buck", "Hustleburg", "Underhand", "Shellgame", "Racketeer",
         "Sneakaway", "Lucky_Find", "Dodgeton", "Moonlighter", "Haggle", "Fast_One",
-        "Sticky_Deal"),
+        "Sticky_Deal",
+        "Snake_Oil", "Black_Market", "Pawnshop", "Hot_Goods", "Sly_Fox", "Cardsharp",
+        "Bait_Switch", "Short_Change", "Back_Alley", "Con_Artist", "Grabbag", "Slick_Deal",
+        "Fly_By_Night", "Easy_Money", "Side_Door", "Skim_Top", "Two_Faced", "Hoodwink"),
 }
 
 ROMAN = ("II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X")

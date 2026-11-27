@@ -198,7 +198,7 @@ def test_export_permissions(tmp_path, monkeypatch):
     c.post(f"/api/games/{gid2}/force", headers=H(h1))
     assert c.get(f"/api/games/{gid2}/export", headers=H(h1)).status_code == 200
     assert c.get(f"/api/games/{gid2}/export", headers=H(h2)).status_code == 403
-    monkeypatch.setattr(K, "VICTORY_POINTS", 1)              # someone wins next turn
+    c.app.state.games[gid2].state.vp_to_win = 1             # someone wins next turn (G-28)
     c.post(f"/api/games/{gid2}/force", headers=H(h1))
     assert c.get(f"/api/games/{gid2}").json()["finished"]
     for tok_ in (h1, h2):
@@ -219,7 +219,7 @@ def test_export_contents_and_final_view(tmp_path, monkeypatch):
         r = c.post(f"/api/games/{gid}/submit", headers=H(tok),
                    json={"text": f"BI {home} 1" if n % 2 == 0 else "PT 2"})
         assert r.json()["turn_ran"]
-    monkeypatch.setattr(K, "VICTORY_POINTS", 1)
+    c.app.state.games[gid].state.vp_to_win = 1          # the game's own target (G-28)
     c.post(f"/api/games/{gid}/force", headers=H(tok))
     z = zipfile.ZipFile(io.BytesIO(c.get(f"/api/games/{gid}/export", headers=H(tok)).content))
     names = set(z.namelist())

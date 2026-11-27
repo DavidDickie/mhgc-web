@@ -50,7 +50,8 @@ def test_ranges():
     with pytest.raises(OrderSyntaxError):
         parse_line("CSP Hum 85 5 10")           # each >= 10
     with pytest.raises(OrderSyntaxError):
-        parse_line("MO 1 100 5")                # board is 0..99
+        parse_line("MO 1 125 5")                # the largest board is 0..124 (G-30); each game
+    assert parse_line("MO 1 100 5")             # checks its own board when the order runs
 
 
 @pytest.mark.parametrize("line", ["DI Hum -3", "BI Hum -1", "U 3 A -5", "UG 3 I -50",

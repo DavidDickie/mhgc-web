@@ -30,7 +30,7 @@ def baseline_orders(view: dict, mem: dict, rng) -> list[Order]:
             plan.infra(s, 1, "infrastructure")
         roll = rng.random()
         if roll < 0.25:
-            plan.build_ship(s, "T", "F", "SC", "random build", 30)
+            plan.build_ship(s, "T", "F", None, "random build", 30)
         elif roll < 0.55:
             plan.build_ship(s, rng.choice(warships or ["F"]), "N", "SC", "random build", 30)
         elif roll < 0.65:

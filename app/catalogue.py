@@ -13,9 +13,9 @@ from mhgc.data.troops import POSTURE_NAMES, TROOP_TYPES
 KINDS = {
     "int": "a whole number",
     "nat": "a whole number, 0 or more",
-    "coord": "a coordinate 0-99 on the 100x100 board (0-74 on 75x75, 0-49 on 50x50), relative to "
-             "your home (your home is at the board centre: 50,50, or 37,37 on 75x75, 25,25 on "
-             "50x50)",
+    "coord": "a coordinate 0-99 on the 100x100 board (0-74 on 75x75, 0-49 on 50x50, 0-124 on "
+             "125x125), relative to your home (your home is at the board centre: 50,50, or 37,37 "
+             "on 75x75, 25,25 on 50x50, 62,62 on 125x125)",
     "pct": "a percentage 0-100",
     "str": "a name (one word, no spaces)",
     "choice": "one of the listed choices",

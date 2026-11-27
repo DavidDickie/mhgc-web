@@ -591,6 +591,7 @@ class Game:
                 # the host's race can't win or earn ranking VP (W-28), as of now
                 "host_handicap": bool(self.handicapped()),
                 "size": self.size, "board": st.board, "bins": st.bins,
+                "vp_to_win": st.vp_to_win,          # fixed at creation (G-28)
                 "empty_bins": [list(b) for b in st.empty_bins], "chatter": self.chatter,
                 "host_seat": self.meta.get("host"), "seats": seats,
                 "open_seats": [x["seat"] for x in seats if x["open"]],
@@ -602,7 +603,7 @@ class Game:
 # ---------------------------------------------------------------- request models
 class NewGame(BaseModel):
     name: str = Field(default="", max_length=60)
-    # empires in the game: 4, 8 (default), 9, 12 or 16 (DECISIONS W-13, W-26).  When omitted and
+    # empires in the game: 4, 8 (default), 9, 12, 16, 20 or 25 (DECISIONS W-13, W-26, G-30).  When omitted and
     # `computers` is given, the size is humans + computers.
     size: Optional[int] = None
     humans: int = Field(ge=0, le=K.MAX_EMPIRES)
@@ -834,7 +835,7 @@ def create_app(save_dir: Optional[str | Path] = None) -> FastAPI:
 
     @app.get("/api/orders/catalogue")
     def catalogue(board: int = Query(default=K.BOARD)):
-        """The order catalogue; `board` (50, 75 or 100) sets the coordinate fields' range."""
+        """The order catalogue; `board` (50, 75, 100 or 125) sets the coordinate fields' range."""
         if board not in {side * K.BIN for side, _ in K.GAME_SIZES.values()}:
             raise HTTPException(422, "No such board size")
         return order_catalogue(board)
@@ -1599,7 +1600,9 @@ def create_app(save_dir: Optional[str | Path] = None) -> FastAPI:
     @app.post("/api/games/{gid}/force")
     def force(gid: str, body: Optional[ForceBody] = None,
               x_seat_token: Optional[str] = Header(default=None)):
-        """Host only: run the turn now.  Seats that haven't submitted give no orders.  In a game
+        """Host only: run the turn now.  A seat that hasn't submitted plays by AOMT (on by default,
+        W-30: its draft runs as if submitted, or the stand-in bot plays an empty draft); with
+        AOMT off it gives no orders (W-10).  In a game
         no human gives orders in (W-24) this is "Run turn", the only way it advances; `turns`
         runs up to 20 turns there, one at a time (each committed and logged), stopping at the
         end of the game."""

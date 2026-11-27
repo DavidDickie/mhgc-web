@@ -4,7 +4,7 @@
 // A page plays exactly one race (or the host login); switching loads the page afresh, so nothing
 // of one race's view is ever kept while showing another.
 "use strict";
-import { S, api, el, clear, $, toast, confirmBox, seatFor, racesFor, forgetSeat } from "./core.js";
+import { S, api, el, clear, $, toast, confirmBox, seatFor, racesFor, forgetSeat, byName } from "./core.js";
 import { exportGame } from "./final.js";
 import { openGame } from "./lobby.js";
 
@@ -87,12 +87,12 @@ export function renderAccount() {
   const host = me.seat === 0;
   const races = racesFor(S.gid);
   const sw = $("raceSwitch");
-  clear(sw, races.map(r => el("option", { value: r.seat, selected: r.seat === me.seat }, r.seat === 0 ? "Host (no race)" : `The ${r.race || `seat ${r.seat}`}`)),
+  clear(sw, [...races.filter(r => r.seat === 0), ...byName(races.filter(r => r.seat !== 0), r => r.race || `seat ${r.seat}`)].map(r => el("option", { value: r.seat, selected: r.seat === me.seat }, r.seat === 0 ? "Host (no race)" : `The ${r.race || `seat ${r.seat}`}`)),
     el("option", { value: "+" }, "Log in to another race…"));
   sw.hidden = races.length < 2;
   const va = $("viewAsPick");
   va.hidden = !host || !S.hostRaces;
-  if (host && S.hostRaces) clear(va, S.hostRaces.map(r => el("option", { value: r.id, selected: r.id === S.viewAs }, `View as the ${r.race}${r.human ? (r.player ? ` (${r.player})` : " (open seat)") : " (computer)"}`)));
+  if (host && S.hostRaces) clear(va, byName(S.hostRaces, r => r.race).map(r => el("option", { value: r.id, selected: r.id === S.viewAs }, `View as the ${r.race}${r.human ? (r.player ? ` (${r.player})` : " (open seat)") : " (computer)"}`)));
   const b = $("viewAsBanner");
   b.hidden = !host;
   if (host) {

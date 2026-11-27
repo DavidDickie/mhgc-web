@@ -64,7 +64,7 @@ def compute_stats(ctx: TurnContext) -> None:
         e.vp = int(d["VCT"])
         rep = ctx.res.report(eid)
         rep.stats = {"values": e.stats, "ranks": e.ranks, "vp": e.vp,
-                     "vp_needed": K.VICTORY_POINTS}
+                     "vp_needed": st.vp_to_win}
         if eid in out:
             rep.stats["unranked"] = True        # the host's race (W-28): no ranks, can't win
     for viewer, target in ctx.pending_son:
@@ -82,15 +82,16 @@ def _son_event(st, target):
 
 
 def check_victory(ctx: TurnContext) -> None:
-    """First empire to 100 VP wins, human or computer (A-06), except a race in `st.unranked` (the
-    host's race in a game with another human, W-28); several reaching it the same turn
+    """First empire to the game's win target (`st.vp_to_win`: 100 for new games, G-28) wins,
+    human or computer (A-06), except a race in `st.unranked` (the host's race in a game with
+    another human, W-28); several reaching it the same turn
     are a tie, decided by NNP (rules:199-200; DECISIONS flag F-05)."""
     st = ctx.state
     if st.winner is not None:
         return
     out = set(st.unranked or ())                # the host's race can't win (W-28)
     reached = [e for e in st.empires.values() if e.kind in (HUMAN, NPR)
-               and e.vp >= K.VICTORY_POINTS and e.id not in out]
+               and e.vp >= st.vp_to_win and e.id not in out]
     if not reached:
         return
     reached.sort(key=lambda e: (e.stats.get("NNP", 0), e.vp), reverse=True)

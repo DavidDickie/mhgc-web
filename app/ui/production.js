@@ -6,7 +6,7 @@
 // isn't a valid CSP (three whole numbers 10-80 totalling exactly 100) is shown in red with a hint,
 // isn't sent to the preview (its projection is dimmed as stale), and is skipped by "Generate".
 "use strict";
-import { S, api, el, clear, fmt, emit, toast, canOrder, isHistory, on, getPref, setPref } from "./core.js";
+import { S, api, el, clear, fmt, emit, toast, canOrder, isHistory, on, getPref, setPref, compareNames } from "./core.js";
 import { saveDraft, rowToDict, openOrder } from "./orders.js";
 
 const KEYS = ["au", "iu", "eu"];
@@ -40,8 +40,8 @@ function sortedSystems(list) {
   const st = sortState(), c = SORT_COLS[st.key];
   return list.slice().sort((a, b) => {
     const x = c.get(a), y = c.get(b);
-    const d = typeof x === "number" && typeof y === "number" ? x - y : String(x ?? "").localeCompare(String(y ?? ""), undefined, { numeric: true });
-    return d * st.dir || a.name.localeCompare(b.name);
+    const d = typeof x === "number" && typeof y === "number" ? x - y : compareNames(x, y);
+    return d * st.dir || compareNames(a.name, b.name);       // equal population: by name (W-32)
   });
 }
 function sortBy(key) {

@@ -235,7 +235,7 @@ def view(state: GameState, results: Any, empire: int) -> dict:
         "view_version": VIEW_VERSION,
         "game": {"name": st.name, "turn": st.turn,
                  "winner": winner, "winner_name": ename(winner) if winner is not None else None,
-                 "vp_to_win": K.VICTORY_POINTS, "board": st.board,
+                 "vp_to_win": st.vp_to_win, "board": st.board,
                  "size": sum(1 for e in st.empires.values() if e.id != 0),
                  "bins": st.bins, "empty_bins": [list(b) for b in st.empty_bins]},
         "empire": {"id": me.id, "name": me.name, "kind": me.kind,

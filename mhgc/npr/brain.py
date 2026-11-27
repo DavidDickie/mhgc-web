@@ -52,7 +52,7 @@ def _decide(view: dict, mem: dict, rng, record: bool) -> Plan:
     plan.thr = thr
     threatened = {sid for sid, t in thr.items() if t["attack"] > 0}
     at_war = any(w.at_war(r) for r in w.contacted())
-    vp_push = w.vp >= 0.6 * K.VICTORY_POINTS
+    vp_push = w.vp >= 0.6 * w.view["game"].get("vp_to_win", K.VICTORY_POINTS)
     saw = trace.saw(w, thr, seen_stance) if record else None   # before the plan edits its world
 
     plan.area = "trade"

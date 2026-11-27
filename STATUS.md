@@ -289,13 +289,22 @@ Other properties:
 - Games are not pruned (no deadlines; PBEM games are slow).
 - A turn costs about 100 KB on disk.
 
+## 20- and 25-empire games (2026-11-24)
+
+Dave: 20 and 25 empires on a 5x5 grid of bins (125x125, 25 squares a bin). DECISIONS G-30; RULEBOOK "THE GAMEBOARD".
+
+- **Sizes:** `GAME_SIZES[25] = (5, ())`; `GAME_SIZES[20]` has five empty bins in a knight's-move pattern, (bx, by) = (2r mod 5, r): on the torus every home bin has exactly two empty neighbours, one side-on and one corner-on, and no two empty bins touch (`tests/test_size_5x5.py`). 275 systems; home at 62,62 relative.
+- **Scale fixes:** `MAX_EMPIRES` 25; the order parser's coordinate cap is the largest board (0-124, `K.MAX_BOARD`), the game checks its own board when the order runs; nine more default race names with their own system names; persona name pools 50 each, every 25th per bot; the map skips the axis label crowding the seam's 0.
+- **Measured** (bot games, seed 3, 30 turns): 0.13 s a turn / 38 MB peak at 20, 0.18 s / 42 MB at 25 (16: 0.08 s / 35 MB). A full 25-empire game: 72 turns, 0.48 s a turn on average, 0.94 s worst, 74 MB; view 62 KB a race, save 1.5 MB. No profiling needed.
+- **UI:** seven size cards (the grid wraps to two rows); "20 empires / 5x5, 125x125"; human seats up to the size. Map, minimap, zoom-out and "Go to system" needed no change. Browser test `uitest/size5x5.py` (screenshots `size25-*.png`, `size20-*.png`).
+
 ## Four-empire game (2026-11-16)
 
 Dave: "add a four player game (four quadrants). Resize the map as needed." DECISIONS W-26 (extends W-13); RULEBOOK "THE GAMEBOARD".
 
 - **Size 4** = 2x2 bins on a 50x50 torus, no empty bins, 44 systems, home at 25,25 relative. `constants.GAME_SIZES[4]`; nothing else in the board parameterisation needed changing (checked: geometry/wrap, scans, scan mask (420 base64 chars), view, catalogue `?board=50` -> 0-49, map grid/coverage/minimap/torus copies, the bot's 5x5 scout grid and distances).
 - **Home spacing:** homes are within 5 of their bin centre, so always >= 15 apart (200 seeds: 15..25; the torus maximum is 25). Starting scans are 4 (home) and 3 (scout), so nobody starts in another's scans. `mapgen.MIN_HOME_DISTANCE` (9) states it; it never rejects a draw, so the other sizes generate identically (120 seeded maps hashed before/after).
-- **Victory** stayed 100 VP here (now 90 since 2026-11-19, DECISIONS G-26): 11 systems an empire as at 9 and 16; bots-only games were won on turns 83-86 at size 4 (72-84 at 16, 63-82 at 8). Stat-bonus VP weigh a little more with 3 rivals (11-14 for the winner vs 4-6 at 16); the smaller map offsets it.
+- **Victory** stayed 100 VP here (90 from 2026-11-19, G-26; back to 100 for new games from 2026-11-22, G-28, with older games keeping 90): 11 systems an empire as at 9 and 16; bots-only games were won on turns 83-86 at size 4 (72-84 at 16, 63-82 at 8). Stat-bonus VP weigh a little more with 3 rivals (11-14 for the winner vs 4-6 at 16); the smaller map offsets it.
 - **Lobby:** a "4" card (2x2 diagram) first in the picker; 8 is still the default; seats capped at 4.
 - **Tests:** `tests/test_sizes.py` now 41 (size 4 in every parametrised test, plus 12 seeds of board/bins/44 systems/home spacing/no foreign object in starting scans, geometry/scan mask/view/orders/catalogue at 50, the bot's scout grid at 50, a 60-turn bots-only game; API: size 4, 5 humans refused, 4+1 refused, catalogue 50 ok and 60 refused). Browser: `flow.py` at `MHGC_SIZE=4` 49/49 (`~/mhgc/work/shots/flow4-*.png`), and still 49/49 at 16 and 8.
 

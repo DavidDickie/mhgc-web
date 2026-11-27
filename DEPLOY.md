@@ -49,7 +49,8 @@ documentation is at `https://<your-address>/docs`.
 
 ## 5. Play with friends
 1. Open `https://<your-address>/`. You see the game list. Choose **New game** and fill in a game
-   name (optional), your name, the **Game size** (8 empires on 75x75 is the default; 9, 12 or 16),
+   name (optional), your name, the **Game size** (8 empires on 75x75 is the default; 4 on 50x50, 9 on 75x75, 12 or 16
+   on 100x100, 20 or 25 on 125x125),
    the number of **Human seats** (up to the size) and how chatty the computer empires are. Then
    either **I'll play a race**: a race name (one word, such as `Terrans`) and a **password** for it
    (at least 4 characters), or **Host only, no race**. Either way the game needs a **host
@@ -82,8 +83,10 @@ documentation is at `https://<your-address>/docs`.
    contact with (the rules' contact requirement). Computer empires don't read chat; use a MESSAGE
    order for them.
 7. You created the game, so you are the host. The host can **Force turn** (top bar): it runs the
-   turn now, without waiting, after asking you to confirm; seats that haven't submitted give no
-   orders that turn. The ☰ menu has **Host controls**: reset a player's forgotten password (you
+   turn now, without waiting, after asking you to confirm. A seat that hasn't submitted is played
+   by **AOMT** ("autopilot"), on by default: its unsubmitted draft runs as if submitted, or the
+   computer stands in for an empty draft; a player who turned AOMT off gives no orders that turn
+   (DECISIONS W-29, W-30). The ☰ menu has **Host controls**: reset a player's forgotten password (you
    give them a temporary one), hand a race to the computer, open a computer empire for a new
    player, and **Export for analysis** at any time. With the host password ("I'm the host" in the
    game dialog) you can also log in as the host without a race and **View as** any race,
