@@ -1,6 +1,6 @@
 [project]
 name = "mhgc-web"
-version = "5.0.4"
+version = "5.0.6"
 description = "Mega Hyper Galactic Conquest: Python engine and web game"
 requires-python = ">=3.10"
 dependencies = ["fastapi>=0.110", "uvicorn>=0.29"]

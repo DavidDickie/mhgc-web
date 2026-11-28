@@ -96,7 +96,7 @@ Beta Test by some of the above and the following Stalwarts who stayed to the bit
 
 MHGC is your typical expand / grow / kill everyone else space conquest game. The name is derived from an old game I wrote and ran at Rensselaer Polytechnic Institute (RPI or the 'tute) and HyperEconomic Diplomacy (a.k.a. GeoDiplomacy or Geodip). I was playing Geodip at the time I became motivated enough to ruin my life with this incredible time sink. The game is at best vaguely related to either of these preceding games, so don't base any strategies on the name selection.
 
-In the game, players attempt to balance expansion, capital investment, technology investment, and military conquest in order to be crowned "Grand Poobah of the Universe."
+In the game, players attempt to balance expansion, capital investment, technology investment, and military conquest in order to be crowned "Grand Poohba of the Universe."
 
 MHGC was originally written to play by Email. Now it runs in your web browser: you give your orders on screen, and your turn results come back on screen. "PLAYING IN YOUR BROWSER" explains the screen; everything after it is the game.
 

@@ -361,7 +361,8 @@ def tech_score(w, t: int, pressed: bool, vp_push: bool = False) -> float:
     score += _military_value(w, t) * (2.0 if pressed else 1.0) * \
         (0.5 + w.persona["aggression"] * 2)
     score += _unlock_value(w, t) * 0.4
-    score += _portals.research_pull(w, t)      # FP/WT with a far front (G-24)
+    if hasattr(w, "home"):                     # FP/WT with a far front (G-24); a trade
+        score += _portals.research_pull(w, t)  # valuer (trade._Valuer, TTNPR ANY) has no map
     if t == 21 and t not in w.techs and hasattr(w, "known"):   # routes we could set up (A-11)
         from . import ctt
         score += ctt.research_value(w)

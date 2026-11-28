@@ -315,3 +315,19 @@ def test_accept_api_for_an_any_offer(tmp_path):
     assert c.post(url, json={"alt": 1}, headers=H).status_code == 422
     rows = c.get(f"/api/games/{gid}/orders", headers=H).json()["orders"]
     assert [x["text"] for x in rows if x["code"] == "TTNPR"] == [r["order"]["text"]]
+
+
+def test_any_pick_values_portal_techs_without_a_map():
+    """Dave 2026-11-28 (game 4ffd8b19, turn 41): TTNPR ANY 1000 ANY 1000 crashed the turn when
+    the candidates included the Farcaster / Warp Tunnel techs, because the portal research bonus
+    (portals.research_pull) needs the bot's map and the trade valuer has none.  Both picks
+    must work for every tech, portal techs included."""
+    from mhgc.npr.portals import PULL
+    st = make_state()
+    eid = next(e for e in st.empires if e)
+    mem = memory(st, eid, "builder")
+    cands = sorted(set(PULL) | {t for t in TECHS if t})
+    for most in (True, False):
+        assert trade.any_pick(mem, set(), 41, cands, most) in cands
+        for t in PULL:
+            assert trade.any_pick(mem, set(), 41, [t], most) == t

@@ -4,6 +4,12 @@ The version is shown at the foot of the ☰ menu (top right), by `/api/health`, 
 export's `manifest.json` (`app_version`). It lives in `mhgc/__init__.py` (`__version__`,
 `__version_date__`) and `pyproject.toml`; bump it with every zip rebuild and add a line here.
 
+## 5.0.6 (2026-11-28)
+- B-49: `TTNPR ANY <price>` no longer crashes the turn when the price band includes the Farcaster Portal or Warp Tunnel techs (it blocked Submit and Force turn).
+
+## 5.0.5 (2026-11-27)
+- "Grand Poohba of the Universe" (Dave's spelling, as in the 2008 C code) in the rulebook and the victory message; it was "Poobah".
+
 ## 5.0.4 (2026-11-27)
 - Renumbered as "big" version 5 (Dave 2026-11-27): MHGC web is the fifth major version of the game. Same code as 1.0.4; earlier builds 1.0.0-1.0.4 correspond to 5.0.0-5.0.4 (exports made with them still say 1.0.x).
 

@@ -409,6 +409,7 @@ ENGINE_MAP 60.8 (Java) isn't used: the Java engine never ran, and the rules and 
 | B-46 | CCP E on a dug-in unit restarts the 3-turn countdown | No change if already entrenching or entrenched |
 | B-47 | SR (release system) leaves the system's stock | Code kept (SR isn't in the rules, but the rules are silent): pop 0, owner 0 |
 | B-48 | TTNPR "falls off the end" without a return; failed attempts use up the turn's attempt | Proper result. The failed attempt still counts (code). |
+| B-49 | TTNPR `ANY <price>` crashed the turn when the band held a portal tech (Dave 2026-11-28, game 4ffd8b19 turn 41: `TTNPR ANY 1000 ANY 1000 Porkines`; submit and Force turn both failed) | `econ.tech_score` called `portals.research_pull`, which needs the bot's map (`w.home()`), but the ANY pick values techs with `trade._Valuer`, which has none. The portal bonus is now skipped for the valuer, like the CTT bonus beside it. Check orders never runs the computer empire's pick, so it showed the draft as OK. Test `test_any_pick_values_portal_techs_without_a_map`. |
 
 ### Map generation (gcugen.c)
 

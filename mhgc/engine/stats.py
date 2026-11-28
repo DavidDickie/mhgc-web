@@ -102,4 +102,4 @@ def check_victory(ctx: TurnContext) -> None:
     for e in st.empires.values():
         if e.kind in (HUMAN, NPR):
             ctx.res.emit(e.id, "victory", f"The {w.name} have reached {w.vp} victory points and "
-                         f"are crowned Grand Poobah of the Universe!", "general", race=w.id)
+                         f"are crowned Grand Poohba of the Universe!", "general", race=w.id)
